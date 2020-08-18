@@ -1,0 +1,31 @@
+---
+-  name: "installing mariadb"
+   become: yes
+   hosts: amazon
+   vars_files:
+     - vars.yml
+   tasks:
+     - name: "install mysql and python"
+       yum:
+         name:
+           - mariadb-server
+           - MySQL-python
+         state: present
+     - name: "restarting mariadb"
+       service:
+         name: mariadb
+         state: restarted
+         enabled: true
+     - name: "Mariadb-Server -Resetting Root password"
+       ignore_errors: true
+       mysql_user:
+         login_user: "root"
+         login_password: ""
+         user: "root"
+         password: "{{ database_root }}"
+         host_all: yes
+     - name: "Mariadb-server - Removing anonymous users"
+       mysql_user:
+         login_user: "root"
+         login_password: "{{ database_root }}"
+         user: ""
